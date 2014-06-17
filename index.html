@@ -1,0 +1,145 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" media="all">
+    <link rel="stylesheet" type="text/css" href="jquery-ui-bootstrap/css/custom-theme/jquery-ui-1.10.0.custom.css" media="all">
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+    <script src="http://cdn.jsdelivr.net/jsrender/1.0pre35/jsrender.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.3.1/jquery.maskedinput.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-maskmoney/3.0.2/jquery.maskMoney.min.js"></script>
+</head>
+    <body>
+        <div class="container">
+            <h1>Despesas</h1>
+            <div class="row">
+                <div class="col-12">
+                    <button class="btn btn-danger" id="despesa">Despesa</button>
+                    <button class="btn btn-success" id="receita">Receita</button>
+                </div>
+            <div class="row">
+                <div class="col-12">
+                </div>
+            </div>
+        </div>
+        <!-- Formulurio de Despesas -->
+        <div id="despesaDialog" title="Despesa" style="display:none">
+            <form id="formDespesa">
+                <input name="tipo" type="hidden" value="d">
+                <label>Descrição:</label>
+                <input name="descricao" type="text" class="form-control">
+                <label>valor:</label>
+                <input name="valor" class="valor form-control">
+                <label>Data</label>
+                <input name="data" class="data form-control">
+                <label>Categoria:</label>
+                <input class="form-control">
+                <label>Pago</label>
+                <input type="checkbox" class="form-control">
+                <button id="salvarDespesa" class="btn btn-primary">Salvar</button>
+            </form>
+        </div>
+        <div id="receitaDialog" title="Receita" style="display:none">
+            <form id="formReceita">
+                <input name="tipo" type="hidden" value="r">
+                <label>Descrição:</label>
+                <input name="descricao" type="text" class="form-control">
+                <label>valor:</label>
+                <input name="valor" class="valor form-control">
+                <label>Data</label>
+                <input name="data" class="data form-control">
+                <label>Categoria:</label>
+                <input class="form-control">
+                <label>Pago</label>
+                <input type="checkbox" class="form-control">
+                <button id="salvarReceita" class="btn btn-primary">Salvar</button>
+        </div>
+        <!-- caixas de dialogo-->
+        <script>
+             jQuery("#despesa").click(function() {
+                     jQuery( "#despesaDialog" ).dialog({position:{ my:"center", at:"center", of:window } });
+            });
+
+             jQuery("#receita").click(function() {
+                jQuery( "#receitaDialog" ).dialog();
+            });
+        </script>
+
+        <!-- Tabela com as movimentações -->
+        <table id="movimentacao" class="table">
+            <thead>
+                <th>Data</th>
+                <th>Descrição</th>
+                <th>Valor</th>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+
+        <script id="despesaTmpl" type="text/x-jsrender">
+          <tr
+            {{if tipo=='d'}}
+                class="danger"
+            {{else}}
+                class="info"
+            {{/if}}
+            >
+            <td>{{:data}}</td>
+            <td>{{:descricao}}</td>
+            <td>{{:valor}}</td>
+          </tr>
+        </script>
+
+        <!-- Salvar despesa-->
+        <script>
+             jQuery("#salvarDespesa").click(function (event) {
+                event.preventDefault();
+
+                var $form = jQuery("#formDespesa");
+                jQuery( "#despesaDialog" ).dialog("close");
+
+                var myTemplate = $.templates("#despesaTmpl");
+                var despesa = [
+                  {
+                    tipo: jQuery('#formDespesa input[name="tipo"]').val(),
+                    data: jQuery('#formDespesa input[name="data"]').val(),
+                    descricao: jQuery('#formDespesa input[name="descricao"]').val(),
+                    valor: jQuery('#formDespesa input[name="valor"]').val()
+                  }
+                ];
+
+                var html = myTemplate.render(despesa);
+
+                $('#movimentacao > tbody:last').append(html);
+                $form[0].reset();
+            });
+
+             jQuery("#salvarReceita").click(function (event) {
+                event.preventDefault();
+
+                var $form = jQuery("#formReceita");
+                jQuery( "#receitaDialog" ).dialog("close");
+
+                var myTemplate = $.templates("#despesaTmpl");
+                var despesa = [
+                  {
+                    tipo: jQuery('#formReceita input[name="tipo"]').val(),
+                    data: jQuery('#formReceita input[name="data"]').val(),
+                    descricao: jQuery('#formReceita input[name="descricao"]').val(),
+                    valor: jQuery('#formReceita input[name="valor"]').val()
+                  }
+                ];
+
+                var html = myTemplate.render(despesa);
+
+                $('#movimentacao > tbody:last').append(html);
+                $form[0].reset();
+            });
+        </script>
+        <!-- Mask Inputs-->
+        <script>
+            jQuery(".data").mask("99/99/9999");
+            jQuery('.valor').maskMoney();
+        </script>
+    </body>
+</html>
